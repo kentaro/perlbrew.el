@@ -51,8 +51,8 @@
   (let* ((perls (split-string (perlbrew "list"))))
     (remove-if
      (lambda (i)
-       (not (string-match "^\\(perl\\|[0-9]\\)" i)))
-     perls)))
+       (not (string-match "^\\(perl\\|[0-9]\\|system\\)" i)))
+     (append perls '("system")))))
 
 (defun perlbrew-get-current-perl-path ()
   perlbrew-current-perl-path)
