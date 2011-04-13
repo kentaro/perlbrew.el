@@ -28,11 +28,11 @@
 (defvar perlbrew-command-path "perlbrew")
 (defvar perlbrew-current-perl-path nil)
 
-(defun perlbrew-command (args)
-  (perlbrew-join (list perlbrew-command-path args)))
+(eval-when-compile
+  (require 'cl))
 
 (defun perlbrew (args)
-  (interactive "MArgs: ")
+  (interactive "M$ perlbrew ")
   (let* ((command (perlbrew-command args))
          (result (perlbrew-trim (shell-command-to-string command))))
     (if (interactive-p)
@@ -40,9 +40,22 @@
       result)))
 
 (defun perlbrew-switch (version)
-  (interactive "MVersion: ")
+  (interactive (list (completing-read "Version: " (perlbrew-list))))
   (perlbrew (perlbrew-join (list "switch" version)))
   (perlbrew-set-current-perl-path))
+
+(defun perlbrew-command (args)
+  (perlbrew-join (list perlbrew-command-path args)))
+
+(defun perlbrew-list ()
+  (let* ((perls (split-string (perlbrew "list"))))
+    (remove-if
+     (lambda (i)
+       (not (string-match "^\\(perl\\|[0-9]\\)" i)))
+     perls)))
+
+(defun perlbrew-get-current-perl-path ()
+  perlbrew-current-perl-path)
 
 (defun perlbrew-set-current-perl-path ()
   (setq perlbrew-current-perl-path (perlbrew-trim (shell-command-to-string "which perl"))))
