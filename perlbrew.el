@@ -26,6 +26,7 @@
 ;;; Code:
 
 (defvar perlbrew-command-path "perlbrew")
+(defvar perlbrew-current-perl-path nil)
 
 (defun perlbrew-command (args)
   (perlbrew-join (list perlbrew-command-path args)))
@@ -33,17 +34,24 @@
 (defun perlbrew (args)
   (interactive "MArgs: ")
   (let* ((command (perlbrew-command args))
-         (result (replace-regexp-in-string "\n+$" "" (shell-command-to-string command))))
+         (result (perlbrew-trim (shell-command-to-string command))))
     (if (interactive-p)
         (unless (string-match "^\\s*$" result) (message result))
       result)))
 
 (defun perlbrew-switch (version)
   (interactive "MVersion: ")
-  (perlbrew (perlbrew-join (list "switch" version))))
+  (perlbrew (perlbrew-join (list "switch" version)))
+  (perlbrew-set-current-perl-path))
+
+(defun perlbrew-set-current-perl-path ()
+  (setq perlbrew-current-perl-path (perlbrew-trim (shell-command-to-string "which perl"))))
 
 (defun perlbrew-join (list)
   (mapconcat 'identity list " "))
+
+(defun perlbrew-trim (string)
+  (replace-regexp-in-string "\n+$" "" string))
 
 (provide 'perlbrew)
 ;;; perlbrew.el ends here
