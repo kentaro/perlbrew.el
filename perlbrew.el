@@ -45,8 +45,13 @@
 
 (defun perlbrew-use (version)
   (interactive (list (completing-read "Version: " (perlbrew-list))))
-  (perlbrew-set-current-perl-path version)
-  (perlbrew-set-current-exec-path))
+  (cond ((equal version "system")
+         (perlbrew-clean-exec-path)
+         (setq perlbrew-current-perl-path
+               (perlbrew-trim (shell-command-to-string "which perl"))))
+        (t
+         (perlbrew-set-current-perl-path version)
+         (perlbrew-set-current-exec-path))))
 
 (defun perlbrew-switch (version)
   (interactive (list (completing-read "Version: " (perlbrew-list))))
