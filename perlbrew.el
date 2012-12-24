@@ -70,20 +70,22 @@
   (setq perlbrew-current-perl-path (concat perlbrew-current-perl-dir "/bin/perl")))
 
 (defun perlbrew-set-current-exec-path ()
-  (let* ((bin-dir (concat perlbrew-current-perl-dir "/bin"))
-         (path-list (split-string (getenv "PATH") ":")))
+  (let* ((bin-dir (concat perlbrew-current-perl-dir "/bin")))
+    (perlbrew-clean-exec-path)
 
     ;; setting for PATH
-    (setenv "PATH"
-            (concat
-             bin-dir ":"
-             (mapconcat 'identity
-                        (perlbrew-remove-all-perl-path path-list)
-                        ":")))
+    (setenv "PATH" (concat bin-dir ":" (getenv "PATH")))
 
     ;; setting for exec-path
-    (setq exec-path (perlbrew-remove-all-perl-path exec-path))
     (add-to-list 'exec-path bin-dir)))
+
+(defun perlbrew-clean-exec-path ()
+  (setenv "PATH"
+          (mapconcat
+           'identity
+           (perlbrew-remove-all-perl-path (split-string (getenv "PATH") ":"))
+           ":"))
+  (setq exec-path (perlbrew-remove-all-perl-path exec-path)))
 
 (defun perlbrew-join (list)
   (mapconcat 'identity list " "))
