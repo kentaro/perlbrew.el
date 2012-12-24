@@ -21,11 +21,15 @@
 ;;; Commentary:
 
 ;; (require 'perlbrew)
-;; (perlbrew-switch "perl-5.12.3") ;; initialize perl version to use
+;; (perlbrew-use "perl-5.12.3") ;; initialize perl version to use
 
 ;;; Code:
 
-(defvar perlbrew-command-path "perlbrew")
+(defvar perlbrew-dir (concat (getenv "HOME") "/perl5/perlbrew"))
+(defvar perlbrew-perls-dir (concat perlbrew-dir "/perls"))
+(defvar perlbrew-command-path (concat perlbrew-dir "/bin/perlbrew"))
+
+(defvar perlbrew-current-perl-dir nil)
 (defvar perlbrew-current-perl-path nil)
 
 (eval-when-compile
@@ -35,14 +39,18 @@
   (interactive "M$ perlbrew ")
   (let* ((command (perlbrew-command args))
          (result (perlbrew-trim (shell-command-to-string command))))
-    (if (interactive-p)
+    (if (called-interactively-p)
         (unless (string-match "^\\s*$" result) (message result))
       result)))
 
+(defun perlbrew-use (version)
+  (interactive (list (completing-read "Version: " (perlbrew-list))))
+  (perlbrew-set-current-perl-path version)
+  (perlbrew-set-current-exec-path))
+
 (defun perlbrew-switch (version)
   (interactive (list (completing-read "Version: " (perlbrew-list))))
-  (perlbrew (perlbrew-join (list "switch" version)))
-  (perlbrew-set-current-perl-path))
+  (perlbrew-use version))
 
 (defun perlbrew-command (args)
   (perlbrew-join (list perlbrew-command-path args)))
@@ -57,8 +65,19 @@
 (defun perlbrew-get-current-perl-path ()
   perlbrew-current-perl-path)
 
-(defun perlbrew-set-current-perl-path ()
-  (setq perlbrew-current-perl-path (perlbrew-trim (shell-command-to-string "which perl"))))
+(defun perlbrew-set-current-perl-path (version)
+  (setq perlbrew-current-perl-dir (concat perlbrew-perls-dir "/" version))
+  (setq perlbrew-current-perl-path (concat perlbrew-current-perl-dir "/bin/perl")))
+
+(defun perlbrew-set-current-exec-path ()
+  (let ((bin-dir (concat perlbrew-current-perl-dir "/bin")))
+    ;; setting for PATH
+    (setenv "PATH" (concat bin-dir ":" (getenv "PATH")))
+
+    ;; setting for exec-path
+    (delete bin-dir exec-path)
+    (add-to-list 'exec-path bin-dir)
+    ))
 
 (defun perlbrew-join (list)
   (mapconcat 'identity list " "))
