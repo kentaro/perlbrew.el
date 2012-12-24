@@ -3,6 +3,7 @@
 ;; Copyright (C) 2011 Kentaro Kuribayashi
 
 ;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
+;; Version: 0.2
 ;; Keywords: Emacs, Perl
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -20,14 +21,25 @@
 
 ;;; Commentary:
 
+;;; Initialize
 ;; (require 'perlbrew)
 ;; (perlbrew-use "perl-5.12.3") ;; initialize perl version to use
 
+;;; Customizable Options:
+;;
+;; Below are customizable option list:
+;;
+;; `perlbrew-dir'
+;; your perlbrew directory
+;; default = ~/perl5/perlbrew
+
 ;;; Code:
 
-(defvar perlbrew-dir (concat (getenv "HOME") "/perl5/perlbrew"))
-(defvar perlbrew-perls-dir (concat perlbrew-dir "/perls"))
-(defvar perlbrew-command-path (concat perlbrew-dir "/bin/perlbrew"))
+(defcustom perlbrew-dir (concat (getenv "HOME") "/perl5/perlbrew")
+  "your perlbrew directory")
+
+(defvar perlbrew-perls-dir nil)
+(defvar perlbrew-command-path nil)
 
 (defvar perlbrew-current-perl-dir nil)
 (defvar perlbrew-current-perl-path nil)
@@ -45,6 +57,8 @@
 
 (defun perlbrew-use (version)
   (interactive (list (completing-read "Version: " (perlbrew-list))))
+  (setq perlbrew-perls-dir (concat perlbrew-dir "/perls"))
+
   (cond ((equal version "system")
          (perlbrew-clean-exec-path)
          (setq perlbrew-current-perl-path
@@ -58,6 +72,7 @@
   (perlbrew-use version))
 
 (defun perlbrew-command (args)
+  (setq perlbrew-command-path (concat perlbrew-dir "/bin/perlbrew"))
   (perlbrew-join (list perlbrew-command-path args)))
 
 (defun perlbrew-list ()
