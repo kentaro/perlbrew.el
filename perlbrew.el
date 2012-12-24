@@ -39,7 +39,7 @@
   (interactive "M$ perlbrew ")
   (let* ((command (perlbrew-command args))
          (result (perlbrew-trim (shell-command-to-string command))))
-    (if (called-interactively-p)
+    (if (called-interactively-p 'interactive)
         (unless (string-match "^\\s*$" result) (message result))
       result)))
 
