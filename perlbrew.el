@@ -35,8 +35,13 @@
 
 ;;; Code:
 
+(defgroup perlbrew nil
+  "perlbrew"
+  :group 'perlbrew)
+
 (defcustom perlbrew-dir (concat (getenv "HOME") "/perl5/perlbrew")
-  "your perlbrew directory")
+  "your perlbrew directory"
+  :group 'perlbrew)
 
 (defvar perlbrew-perls-dir nil)
 (defvar perlbrew-command-path nil)
