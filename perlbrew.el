@@ -3,7 +3,7 @@
 ;; Copyright (C) 2011 Kentaro Kuribayashi
 
 ;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
-;; Version: 0.2
+;; Version: 0.3
 ;; Keywords: Emacs, Perl
 
 ;; This program is free software; you can redistribute it and/or modify
