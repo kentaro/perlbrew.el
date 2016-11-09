@@ -39,9 +39,14 @@
   "perlbrew"
   :group 'shell)
 
-(defcustom perlbrew-dir (concat (getenv "HOME") "/perl5/perlbrew")
-  "your perlbrew directory"
-  :group 'perlbrew)
+(defcustom perlbrew-dir (or
+                         (getenv "PERLBREW_ROOT")
+                         (concat (getenv "HOME") "/perl5/perlbrew"))
+  "Your perlbrew directory (PERLBREW_ROOT)."
+  :group 'perlbrew
+  :set (lambda (sym val)
+         (custom-set-default sym val)
+         (setenv "PERLBREW_ROOT" val)))
 
 (defvar perlbrew-perls-dir nil)
 (defvar perlbrew-command-path nil)
