@@ -4,6 +4,8 @@
 
 ;; Author: Kentaro Kuribayashi <kentarok@gmail.com>
 ;; Version: 0.3
+;; Package-Version: 20161109.709
+;; Package-Commit: 3a3406c3307c92aa30f9400d430925c434a3b6f0
 ;; Keywords: Emacs, Perl
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -88,7 +90,7 @@
 
 (defun perlbrew-list ()
   (let* ((perls (split-string (perlbrew "list")))
-         (valid-perls (remove-if-not
+         (valid-perls (cl-remove-if-not
                        (lambda (i)
                          (string-match "^\\(perl\\|[0-9]\\)" i))
                        perls)))
@@ -124,7 +126,7 @@
 
 (defun perlbrew-remove-all-perl-path (path-list)
   (let ((perlbrew-perl-regexp (format "^%s" perlbrew-perls-dir)))
-    (remove-if (lambda (path)
+    (cl-remove-if (lambda (path)
                  (string-match perlbrew-perl-regexp path))
                path-list)))
 
